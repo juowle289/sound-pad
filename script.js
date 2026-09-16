@@ -1,0 +1,726 @@
+// ============================================================
+// SÂN KHẤU ÂM THANH — TRUNG THU
+// Dữ liệu cue + toàn bộ logic phát/dừng/fade/phím tắt
+// ============================================================
+
+const CUES = [
+  {
+    key: 1,
+    group: "intro",
+    tag: "KHAI MẠC",
+    type: "NHAC",
+    title: "Giới thiệu đại biểu",
+    subtitle: "Nền dài khi mời khách",
+    src: "audio/gioi-thieu-db.mp3",
+    defaultVolume: 0.85,
+  },
+  {
+    key: 2,
+    group: "intro",
+    tag: "KHAI MẠC",
+    type: "NHAC",
+    title: "Bước lên sân khấu",
+    subtitle: "Nhạc dẫn vào chương trình",
+    src: "audio/buoc-len-san-khau.mp3",
+    defaultVolume: 0.85,
+  },
+  {
+    key: 3,
+    group: "kich",
+    tag: "CẢNH 1",
+    type: "FX",
+    title: "Cuội làm rơi trăng",
+    subtitle: "Vỡ thủy tinh · một phát",
+    src: "audio/kich/c1-cuoi-lam-roi-trang.mp3",
+    defaultVolume: 0.9,
+  },
+  {
+    key: 4,
+    group: "kich",
+    tag: "CẢNH 1",
+    type: "FX",
+    title: "Tinh Tú sốc",
+    subtitle: "Trống dồn · báo hiệu",
+    src: "audio/kich/c1-tinhtu-soc.wav",
+    defaultVolume: 0.9,
+  },
+  {
+    key: 5,
+    group: "kich",
+    tag: "CẢNH 1",
+    type: "CUE",
+    title: "Tinh Tú khóc",
+    subtitle: "Nhạc cinematic buồn",
+    src: "audio/kich/c1-tinhtu-khoc.mp3",
+    defaultVolume: 0.85,
+  },
+  {
+    key: 6,
+    group: "kich",
+    tag: "CẢNH 2",
+    type: "NHAC",
+    title: "C &amp; H đùn đẩy nhau",
+    subtitle: "Nền vui · cảnh đối thoại",
+    src: "audio/kich/c2-ch-dun-day-nhau.mp3",
+    defaultVolume: 0.75,
+  },
+  {
+    key: 7,
+    group: "kich",
+    tag: "CẢNH 4",
+    type: "CUE",
+    title: "Bốn đệ tử xông vào",
+    subtitle: "Percussion hành động",
+    src: "audio/kich/c4-bon-de-tu-xong-vao.wav",
+    defaultVolume: 0.9,
+  },
+  {
+    key: 8,
+    group: "kich",
+    tag: "CAO TRÀO",
+    type: "NHAC",
+    title: "Trăng ơi sáng lên",
+    subtitle: "Khúc khải hoàn · có thể lặp",
+    src: "audio/trang-oi-sang-len.mp3",
+    defaultVolume: 0.85,
+    defaultLoop: true,
+  },
+];
+
+const TYPE_LABEL = { NHAC: "NHẠC", FX: "FX", CUE: "CUE" };
+// Các loại được coi là "nền" — độc quyền khi bật "Một nền nhạc".
+// FX luôn được phép chồng lên bất cứ thứ gì.
+const BACKGROUND_TYPES = new Set(["NHAC", "CUE"]);
+
+const state = {
+  singleBackground: true,
+  fadeDuration: 1.6, // giây
+  masterVolume: 0.85,
+  masterMuted: false,
+  selectedKey: null, // cue được chọn gần nhất (cho phím "L")
+};
+
+const players = new Map(); // key -> { cue, audio, el, fading, loop, rafId }
+
+const els = {};
+
+document.addEventListener("DOMContentLoaded", init);
+
+function init() {
+  cacheEls();
+  initTheme();
+  buildBoard();
+  bindGlobalControls();
+  bindKeyboard();
+  restorePrefs();
+  updateCueCountBadge();
+  renderNowPlaying();
+  updateStatusLine();
+}
+
+// ------------------------------------------------------------
+// Giao diện sáng / tối
+// ------------------------------------------------------------
+
+function initTheme() {
+  let saved = null;
+  try {
+    saved = localStorage.getItem("trungthu-soundboard-theme");
+  } catch (e) {
+    /* bỏ qua */
+  }
+  setTheme(saved === "light" ? "light" : "dark");
+
+  els.themeToggle.addEventListener("click", () => {
+    const next = document.documentElement.dataset.theme === "light" ? "dark" : "light";
+    setTheme(next);
+  });
+}
+
+function setTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+  els.themeToggle.querySelector("i").className =
+    theme === "light" ? "bi bi-sun-fill" : "bi bi-moon-stars-fill";
+  try {
+    localStorage.setItem("trungthu-soundboard-theme", theme);
+  } catch (e) {
+    /* bỏ qua nếu trình duyệt chặn localStorage */
+  }
+}
+
+function cacheEls() {
+  els.groupIntro = document.getElementById("group-intro");
+  els.groupKich = document.getElementById("group-kich");
+  els.singleBgToggle = document.getElementById("singleBgToggle");
+  els.stopAllBtn = document.getElementById("stopAllBtn");
+  els.fadeInput = document.getElementById("fadeInput");
+  els.cueCount = document.getElementById("cueCount");
+  els.statusLine = document.getElementById("statusLine");
+  els.nowPlayingBar = document.getElementById("nowPlayingBar");
+  els.masterVolume = document.getElementById("masterVolume");
+  els.masterVolumeValue = document.getElementById("masterVolumeValue");
+  els.masterMuteBtn = document.getElementById("masterMuteBtn");
+  els.themeToggle = document.getElementById("themeToggle");
+}
+
+// ------------------------------------------------------------
+// Xây dựng giao diện các thẻ cue
+// ------------------------------------------------------------
+
+function buildBoard() {
+  CUES.filter((c) => c.group === "intro").forEach((cue) =>
+    els.groupIntro.appendChild(renderCueCard(cue))
+  );
+  CUES.filter((c) => c.group === "kich").forEach((cue) =>
+    els.groupKich.appendChild(renderCueCard(cue))
+  );
+}
+
+function renderCueCard(cue) {
+  const col = document.createElement("div");
+  col.className = "col-12 col-sm-6 col-lg-4 col-xl-3";
+
+  col.innerHTML = `
+    <div class="cue-card" data-key="${cue.key}" tabindex="0">
+      <div class="cue-watermark">${cue.key}</div>
+      <div class="cue-head">
+        <span class="badge-tag">${cue.key}</span>
+        <span class="badge-scene">${cue.tag}</span>
+        <span class="badge-type badge-type--${cue.type}">${TYPE_LABEL[cue.type]}</span>
+      </div>
+      <h3 class="cue-title">${cue.title}</h3>
+      <p class="cue-subtitle">${cue.subtitle}</p>
+
+      <div class="cue-wave" data-role="wave">
+        ${Array.from({ length: 28 })
+          .map(() => `<span class="wave-bar"></span>`)
+          .join("")}
+      </div>
+
+      <div class="cue-seek-row">
+        <input type="range" class="form-range cue-seek" data-role="seek" min="0" max="1000" value="0" step="1" />
+      </div>
+      <div class="cue-time-row">
+        <span data-role="time-current">0:00</span>
+        <span data-role="time-total">0:00</span>
+      </div>
+
+      <div class="cue-controls">
+        <button class="ctrl-btn ctrl-btn--play" data-role="play" title="Phát / Tạm dừng (phím ${cue.key})">
+          <i class="bi bi-play-fill"></i>
+        </button>
+        <button class="ctrl-btn" data-role="stop" title="Dừng &amp; fade">
+          <i class="bi bi-square-fill"></i>
+        </button>
+        <button class="ctrl-btn" data-role="loop" title="Lặp lại (phím L khi được chọn)">
+          <i class="bi bi-repeat"></i>
+        </button>
+        <span class="ctrl-vol">
+          <i class="bi bi-volume-up" data-role="vol-icon"></i>
+          <input type="range" class="form-range vol-range" data-role="volume" min="0" max="100" value="${Math.round(
+            (cue.defaultVolume ?? 0.85) * 100
+          )}" />
+        </span>
+      </div>
+    </div>
+  `;
+
+  const cardEl = col.querySelector(".cue-card");
+  setupCuePlayer(cue, cardEl);
+  return col;
+}
+
+// ------------------------------------------------------------
+// Khởi tạo player cho từng cue
+// ------------------------------------------------------------
+
+function setupCuePlayer(cue, cardEl) {
+  const audio = new Audio(cue.src);
+  audio.preload = "metadata";
+  audio.loop = false; // ta tự quản lý loop để còn fade mượt khi lặp
+
+  const player = {
+    cue,
+    audio,
+    el: cardEl,
+    fading: false,
+    loop: !!cue.defaultLoop,
+    baseVolume: cue.defaultVolume ?? 0.85,
+    waveTimer: null,
+  };
+  players.set(cue.key, player);
+
+  const seek = cardEl.querySelector('[data-role="seek"]');
+  const volRange = cardEl.querySelector('[data-role="volume"]');
+  const volIcon = cardEl.querySelector('[data-role="vol-icon"]');
+  const timeCurrent = cardEl.querySelector('[data-role="time-current"]');
+  const timeTotal = cardEl.querySelector('[data-role="time-total"]');
+  const playBtn = cardEl.querySelector('[data-role="play"]');
+  const stopBtn = cardEl.querySelector('[data-role="stop"]');
+  const loopBtn = cardEl.querySelector('[data-role="loop"]');
+
+  if (player.loop) loopBtn.classList.add("is-active");
+
+  audio.addEventListener("loadedmetadata", () => {
+    timeTotal.textContent = formatTime(audio.duration);
+  });
+
+  audio.addEventListener("timeupdate", () => {
+    if (!player.seeking && audio.duration) {
+      seek.value = Math.round((audio.currentTime / audio.duration) * 1000);
+    }
+    timeCurrent.textContent = formatTime(audio.currentTime);
+  });
+
+  audio.addEventListener("ended", () => {
+    if (player.loop) {
+      audio.currentTime = 0;
+      audio.play().catch(() => {});
+    } else {
+      setCardPlayingState(player, false);
+      renderNowPlaying();
+      updateStatusLine();
+    }
+  });
+
+  audio.addEventListener("play", () => {
+    setCardPlayingState(player, true);
+    startWave(player);
+    renderNowPlaying();
+    updateStatusLine();
+  });
+
+  audio.addEventListener("pause", () => {
+    setCardPlayingState(player, false);
+    stopWave(player);
+    renderNowPlaying();
+    updateStatusLine();
+  });
+
+  playBtn.addEventListener("click", () => {
+    selectCue(cue.key);
+    togglePlay(cue.key);
+  });
+
+  stopBtn.addEventListener("click", () => {
+    selectCue(cue.key);
+    fadeStop(cue.key, state.fadeDuration);
+  });
+
+  loopBtn.addEventListener("click", () => {
+    player.loop = !player.loop;
+    loopBtn.classList.toggle("is-active", player.loop);
+  });
+
+  seek.addEventListener("input", () => {
+    player.seeking = true;
+    if (audio.duration) {
+      timeCurrent.textContent = formatTime((seek.value / 1000) * audio.duration);
+    }
+  });
+  seek.addEventListener("change", () => {
+    if (audio.duration) {
+      audio.currentTime = (seek.value / 1000) * audio.duration;
+    }
+    player.seeking = false;
+  });
+
+  volRange.addEventListener("input", () => {
+    player.baseVolume = volRange.value / 100;
+    applyVolume(player);
+    volIcon.className =
+      "bi " + (player.baseVolume === 0 ? "bi-volume-mute" : player.baseVolume < 0.5 ? "bi-volume-down" : "bi-volume-up");
+    savePrefs();
+  });
+
+  applyVolume(player);
+
+  cardEl.addEventListener("click", (e) => {
+    if (!e.target.closest("input") && !e.target.closest("button")) {
+      selectCue(cue.key);
+    }
+  });
+}
+
+function setCardPlayingState(player, isPlaying) {
+  player.el.classList.toggle("is-playing", isPlaying);
+  const icon = player.el.querySelector('[data-role="play"] i');
+  icon.className = isPlaying ? "bi bi-pause-fill" : "bi bi-play-fill";
+}
+
+// ------------------------------------------------------------
+// Phát / dừng / fade
+// ------------------------------------------------------------
+
+function togglePlay(key) {
+  const player = players.get(key);
+  if (!player) return;
+
+  if (!player.audio.paused) {
+    player.audio.pause();
+    return;
+  }
+
+  player.fading = false;
+  applyVolume(player);
+
+  // "Một nền nhạc": khi bật, cue thuộc nhóm nền (NHAC/CUE) sẽ làm fade-dừng
+  // các cue nền khác đang phát. FX luôn được phép chồng.
+  if (state.singleBackground && BACKGROUND_TYPES.has(player.cue.type)) {
+    players.forEach((other, otherKey) => {
+      if (
+        otherKey !== key &&
+        BACKGROUND_TYPES.has(other.cue.type) &&
+        !other.audio.paused
+      ) {
+        fadeStop(otherKey, state.fadeDuration);
+      }
+    });
+  }
+
+  player.audio.play().catch((err) => {
+    console.error("Không phát được:", player.cue.title, err);
+    flashStatus(`Không thể phát "${player.cue.title}". Kiểm tra lại file âm thanh.`);
+  });
+}
+
+function fadeStop(key, duration) {
+  const player = players.get(key);
+  if (!player || player.audio.paused) return;
+  if (player.fading) return;
+
+  player.fading = true;
+  const audio = player.audio;
+  const startVol = audio.volume;
+  const startTime = performance.now();
+  const durMs = Math.max(duration, 0.05) * 1000;
+
+  function step(now) {
+    if (!player.fading) return; // đã bị huỷ / phát lại
+    const t = Math.min(1, (now - startTime) / durMs);
+    audio.volume = startVol * (1 - t);
+    if (t < 1) {
+      requestAnimationFrame(step);
+    } else {
+      audio.pause();
+      audio.currentTime = 0;
+      player.fading = false;
+      applyVolume(player); // khôi phục volume gốc cho lần phát sau
+    }
+  }
+  requestAnimationFrame(step);
+}
+
+function hardStop(key) {
+  const player = players.get(key);
+  if (!player) return;
+  player.fading = false;
+  player.audio.pause();
+  player.audio.currentTime = 0;
+  applyVolume(player);
+}
+
+function fadeStopAll(duration) {
+  let any = false;
+  players.forEach((player, key) => {
+    if (!player.audio.paused) {
+      any = true;
+      fadeStop(key, duration);
+    }
+  });
+  flashStatus(
+    any
+      ? `Đang dừng dần tất cả (fade ${duration.toFixed(1)}s)…`
+      : "Không có cue nào đang phát."
+  );
+}
+
+function applyVolume(player) {
+  const master = state.masterMuted ? 0 : state.masterVolume;
+  player.audio.volume = Math.max(0, Math.min(1, player.baseVolume * master));
+}
+
+function applyMasterVolumeToAll() {
+  players.forEach((player) => {
+    if (!player.fading) applyVolume(player);
+  });
+}
+
+// ------------------------------------------------------------
+// Waveform giả lập khi đang phát
+// ------------------------------------------------------------
+
+function startWave(player) {
+  const bars = player.el.querySelectorAll(".wave-bar");
+  clearInterval(player.waveTimer);
+  player.waveTimer = setInterval(() => {
+    bars.forEach((bar, i) => {
+      const base = 20 + Math.sin(Date.now() / 180 + i) * 15;
+      const jitter = Math.random() * 40;
+      bar.style.height = `${Math.min(100, Math.max(8, base + jitter))}%`;
+    });
+  }, 90);
+  player.el.querySelector('[data-role="wave"]').classList.add("is-live");
+}
+
+function stopWave(player) {
+  clearInterval(player.waveTimer);
+  player.waveTimer = null;
+  const bars = player.el.querySelectorAll(".wave-bar");
+  bars.forEach((bar) => (bar.style.height = "6%"));
+  player.el.querySelector('[data-role="wave"]').classList.remove("is-live");
+}
+
+// ------------------------------------------------------------
+// Chọn cue hiện hành (dùng cho phím "L")
+// ------------------------------------------------------------
+
+function selectCue(key) {
+  state.selectedKey = key;
+  document.querySelectorAll(".cue-card").forEach((c) => {
+    c.classList.toggle("is-selected", Number(c.dataset.key) === key);
+  });
+}
+
+// ------------------------------------------------------------
+// Thanh điều khiển chung
+// ------------------------------------------------------------
+
+function bindGlobalControls() {
+  els.singleBgToggle.checked = state.singleBackground;
+  els.singleBgToggle.addEventListener("change", () => {
+    state.singleBackground = els.singleBgToggle.checked;
+    savePrefs();
+  });
+
+  els.stopAllBtn.addEventListener("click", () => fadeStopAll(state.fadeDuration));
+
+  els.fadeInput.value = state.fadeDuration;
+  els.fadeInput.addEventListener("change", () => {
+    const v = parseFloat(els.fadeInput.value);
+    state.fadeDuration = Number.isFinite(v) && v >= 0 ? v : 1.6;
+    els.fadeInput.value = state.fadeDuration;
+    savePrefs();
+  });
+
+  els.masterVolume.value = Math.round(state.masterVolume * 100);
+  els.masterVolumeValue.textContent = els.masterVolume.value;
+  els.masterVolume.addEventListener("input", () => {
+    state.masterVolume = els.masterVolume.value / 100;
+    els.masterVolumeValue.textContent = els.masterVolume.value;
+    if (state.masterMuted) {
+      state.masterMuted = false;
+      updateMasterMuteIcon();
+    }
+    applyMasterVolumeToAll();
+    savePrefs();
+  });
+
+  els.masterMuteBtn.addEventListener("click", () => {
+    state.masterMuted = !state.masterMuted;
+    updateMasterMuteIcon();
+    applyMasterVolumeToAll();
+    savePrefs();
+  });
+}
+
+function updateMasterMuteIcon() {
+  els.masterMuteBtn.querySelector("i").className = state.masterMuted
+    ? "bi bi-volume-mute-fill"
+    : "bi bi-volume-up-fill";
+  els.masterMuteBtn.classList.toggle("is-active", state.masterMuted);
+}
+
+function updateCueCountBadge() {
+  els.cueCount.textContent = `${CUES.length}/${CUES.length} cue`;
+}
+
+// ------------------------------------------------------------
+// Thanh trạng thái + danh sách đang phát (đáy màn hình)
+// ------------------------------------------------------------
+
+let statusFlashTimer = null;
+function flashStatus(text) {
+  els.statusLine.textContent = text;
+  clearTimeout(statusFlashTimer);
+  statusFlashTimer = setTimeout(updateStatusLine, 2600);
+}
+
+function updateStatusLine() {
+  els.statusLine.textContent =
+    "Sẵn sàng — phím 1–8 phát cue, Space dừng dần (fade), L lặp cue đang chọn.";
+}
+
+function renderNowPlaying() {
+  const playing = Array.from(players.values()).filter((p) => !p.audio.paused);
+  els.nowPlayingBar.innerHTML = "";
+
+  if (playing.length === 0) {
+    els.nowPlayingBar.classList.add("d-none");
+    return;
+  }
+  els.nowPlayingBar.classList.remove("d-none");
+
+  playing.forEach((p) => {
+    const row = document.createElement("div");
+    row.className = "now-row";
+    row.dataset.key = p.cue.key;
+    row.innerHTML = `
+      <span class="now-key">${p.cue.key}</span>
+      <span class="now-title">${p.cue.title}</span>
+      <span class="now-time" data-role="now-time">0:00 / 0:00</span>
+      <div class="now-progress"><div class="now-progress-fill" data-role="now-fill"></div></div>
+      <button class="now-stop" data-role="now-stop" title="Dừng &amp; fade">
+        <i class="bi bi-square-fill"></i>
+      </button>
+    `;
+    row.querySelector('[data-role="now-stop"]').addEventListener("click", () => {
+      fadeStop(p.cue.key, state.fadeDuration);
+    });
+    els.nowPlayingBar.appendChild(row);
+  });
+
+  requestAnimationFrame(tickNowPlaying);
+}
+
+let nowPlayingRaf = null;
+function tickNowPlaying() {
+  cancelAnimationFrame(nowPlayingRaf);
+  const rows = els.nowPlayingBar.querySelectorAll(".now-row");
+  if (!rows.length) return;
+
+  rows.forEach((row) => {
+    const key = Number(row.dataset.key);
+    const player = players.get(key);
+    if (!player || player.audio.paused) return;
+    const { currentTime, duration } = player.audio;
+    const fill = row.querySelector('[data-role="now-fill"]');
+    const timeEl = row.querySelector('[data-role="now-time"]');
+    if (duration) {
+      fill.style.width = `${(currentTime / duration) * 100}%`;
+    }
+    timeEl.textContent = `${formatTime(currentTime)} / ${formatTime(duration)}`;
+  });
+
+  nowPlayingRaf = requestAnimationFrame(tickNowPlaying);
+}
+
+// ------------------------------------------------------------
+// Phím tắt
+// ------------------------------------------------------------
+
+function bindKeyboard() {
+  window.addEventListener("keydown", (e) => {
+    if (e.target.matches("input, textarea")) return;
+
+    if (e.code >= "Digit1" && e.code <= "Digit8") {
+      const key = Number(e.code.replace("Digit", ""));
+      if (players.has(key)) {
+        selectCue(key);
+        togglePlay(key);
+      }
+      e.preventDefault();
+      return;
+    }
+
+    if (e.code === "Space") {
+      e.preventDefault();
+      fadeStopAll(state.fadeDuration);
+      return;
+    }
+
+    if (e.key.toLowerCase() === "l") {
+      if (state.selectedKey && players.has(state.selectedKey)) {
+        const player = players.get(state.selectedKey);
+        player.loop = !player.loop;
+        player.el
+          .querySelector('[data-role="loop"]')
+          .classList.toggle("is-active", player.loop);
+        flashStatus(
+          `Lặp lại "${player.cue.title}": ${player.loop ? "BẬT" : "TẮT"}.`
+        );
+      } else {
+        flashStatus("Chưa chọn cue nào để bật/tắt lặp. Bấm vào một thẻ trước.");
+      }
+    }
+
+    if (e.key.toLowerCase() === "m") {
+      els.masterMuteBtn.click();
+    }
+  });
+}
+
+// ------------------------------------------------------------
+// Ghi nhớ tuỳ chọn (localStorage) — tiện khi tổng duyệt nhiều lần
+// ------------------------------------------------------------
+
+function savePrefs() {
+  const volumes = {};
+  players.forEach((p, key) => (volumes[key] = Math.round(p.baseVolume * 100)));
+  const prefs = {
+    singleBackground: state.singleBackground,
+    fadeDuration: state.fadeDuration,
+    masterVolume: state.masterVolume,
+    masterMuted: state.masterMuted,
+    volumes,
+  };
+  try {
+    localStorage.setItem("trungthu-soundboard-prefs", JSON.stringify(prefs));
+  } catch (e) {
+    /* im lặng bỏ qua nếu trình duyệt chặn localStorage (vd. mở trực tiếp file://) */
+  }
+}
+
+function restorePrefs() {
+  let raw = null;
+  try {
+    raw = localStorage.getItem("trungthu-soundboard-prefs");
+  } catch (e) {
+    return;
+  }
+  if (!raw) return;
+  try {
+    const prefs = JSON.parse(raw);
+    if (typeof prefs.singleBackground === "boolean") {
+      state.singleBackground = prefs.singleBackground;
+      els.singleBgToggle.checked = state.singleBackground;
+    }
+    if (typeof prefs.fadeDuration === "number") {
+      state.fadeDuration = prefs.fadeDuration;
+      els.fadeInput.value = state.fadeDuration;
+    }
+    if (typeof prefs.masterVolume === "number") {
+      state.masterVolume = prefs.masterVolume;
+      els.masterVolume.value = Math.round(state.masterVolume * 100);
+      els.masterVolumeValue.textContent = els.masterVolume.value;
+    }
+    if (typeof prefs.masterMuted === "boolean") {
+      state.masterMuted = prefs.masterMuted;
+      updateMasterMuteIcon();
+    }
+    if (prefs.volumes) {
+      Object.entries(prefs.volumes).forEach(([key, vol]) => {
+        const player = players.get(Number(key));
+        if (player) {
+          player.baseVolume = vol / 100;
+          const volRange = player.el.querySelector('[data-role="volume"]');
+          if (volRange) volRange.value = vol;
+          applyVolume(player);
+        }
+      });
+    }
+  } catch (e) {
+    /* dữ liệu hỏng, bỏ qua */
+  }
+}
+
+// ------------------------------------------------------------
+// Tiện ích
+// ------------------------------------------------------------
+
+function formatTime(sec) {
+  if (!Number.isFinite(sec) || sec < 0) return "0:00";
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60);
+  return `${m}:${String(s).padStart(2, "0")}`;
+}
