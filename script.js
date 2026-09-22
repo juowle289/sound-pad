@@ -2,10 +2,19 @@
 // SÂN KHẤU ÂM THANH — TRUNG THU
 // Dữ liệu cue + toàn bộ logic phát/dừng/fade/phím tắt
 // ============================================================
+//
+// Mỗi cue có:
+//   id       — định danh duy nhất, dùng nội bộ (không hiển thị)
+//   label    — số hiển thị ở góc thẻ (chuỗi, có thể là "14-15")
+//   keyBind  — số phím tắt 1-8 (null = không có phím tắt, chỉ click)
+//   group    — "intro" | "tietmuc" | "kich"
 
 const CUES = [
+  // ---------- NHÓM A — GIỚI THIỆU ----------
   {
-    key: 1,
+    id: "intro-1",
+    label: "1",
+    keyBind: 1,
     group: "intro",
     tag: "KHAI MẠC",
     type: "NHAC",
@@ -15,7 +24,9 @@ const CUES = [
     defaultVolume: 0.85,
   },
   {
-    key: 2,
+    id: "intro-2",
+    label: "2",
+    keyBind: 2,
     group: "intro",
     tag: "KHAI MẠC",
     type: "NHAC",
@@ -24,8 +35,182 @@ const CUES = [
     src: "audio/buoc-len-san-khau.mp3",
     defaultVolume: 0.85,
   },
+
+  // ---------- NHÓM B — TIẾT MỤC (chỉ click, không phím tắt) ----------
   {
-    key: 3,
+    id: "tietmuc-1",
+    label: "1",
+    keyBind: null,
+    group: "tietmuc",
+    tag: "TIẾT MỤC",
+    type: "NHAC",
+    title: "Chiếc Đèn Ông Sao",
+    subtitle: "",
+    src: "audio/tiet-muc/1-chiec-den-ong-sao.mp3",
+    defaultVolume: 0.85,
+  },
+  {
+    id: "tietmuc-2",
+    label: "2",
+    keyBind: null,
+    group: "tietmuc",
+    tag: "TIẾT MỤC",
+    type: "NHAC",
+    title: "Kiếp Sau Vẫn Là Người Việt Nam",
+    subtitle: "",
+    src: "audio/tiet-muc/2-kiep-sau-van-la-nguoi-VN.mp3",
+    defaultVolume: 0.85,
+  },
+  {
+    id: "tietmuc-3",
+    label: "3",
+    keyBind: null,
+    group: "tietmuc",
+    tag: "TIẾT MỤC",
+    type: "NHAC",
+    title: "Mashup Thanh Xuân",
+    subtitle: "",
+    src: "audio/tiet-muc/3-mashup-thanh-xuan.mp3",
+    defaultVolume: 0.85,
+  },
+  {
+    id: "tietmuc-4",
+    label: "4",
+    keyBind: null,
+    group: "tietmuc",
+    tag: "TIẾT MỤC",
+    type: "NHAC",
+    title: "Bài Ca Mùa Hạ",
+    subtitle: "",
+    src: "audio/tiet-muc/4-bai-ca-mua-ha.mp3",
+    defaultVolume: 0.85,
+  },
+  {
+    id: "tietmuc-5",
+    label: "5",
+    keyBind: null,
+    group: "tietmuc",
+    tag: "TIẾT MỤC",
+    type: "NHAC",
+    title: "Mashup Cô Gái Mở Đường",
+    subtitle: "",
+    src: "audio/tiet-muc/5-mashup-co-gai-mo-duong.mp3",
+    defaultVolume: 0.85,
+  },
+  {
+    id: "tietmuc-6",
+    label: "6",
+    keyBind: null,
+    group: "tietmuc",
+    tag: "TIẾT MỤC",
+    type: "NHAC",
+    title: "Để Mị Nói Cho Mà Nghe",
+    subtitle: "",
+    src: "audio/tiet-muc/6-de-mi-noi-cho-ma-nghe.mp3",
+    defaultVolume: 0.85,
+  },
+  {
+    id: "tietmuc-7",
+    label: "7",
+    keyBind: null,
+    group: "tietmuc",
+    tag: "TIẾT MỤC",
+    type: "NHAC",
+    title: "Mashup Giai Điệu Tự Hào",
+    subtitle: "",
+    src: "audio/tiet-muc/7-mashup-giai-dieu-tu-hao.mp3",
+    defaultVolume: 0.85,
+  },
+  {
+    id: "tietmuc-8",
+    label: "8",
+    keyBind: null,
+    group: "tietmuc",
+    tag: "TIẾT MỤC",
+    type: "NHAC",
+    title: "Vỗ Tay",
+    subtitle: "",
+    src: "audio/tiet-muc/8-vo-tay.mp3",
+    defaultVolume: 0.85,
+  },
+  {
+    id: "tietmuc-9",
+    label: "9",
+    keyBind: null,
+    group: "tietmuc",
+    tag: "TIẾT MỤC",
+    type: "NHAC",
+    title: "Thằng Cuội",
+    subtitle: "",
+    src: "audio/tiet-muc/9-thang-cuoi.mp3",
+    defaultVolume: 0.85,
+  },
+  {
+    id: "tietmuc-10",
+    label: "10",
+    keyBind: null,
+    group: "tietmuc",
+    tag: "TIẾT MỤC",
+    type: "NHAC",
+    title: "Giai Điệu Việt Nam Mình",
+    subtitle: "",
+    src: "audio/tiet-muc/10-giai-dieu-VN-minh.mp3",
+    defaultVolume: 0.85,
+  },
+  {
+    id: "tietmuc-11",
+    label: "11",
+    keyBind: null,
+    group: "tietmuc",
+    tag: "TIẾT MỤC",
+    type: "NHAC",
+    title: "Má Hồng",
+    subtitle: "",
+    src: "audio/tiet-muc/11-ma-hong.mp3",
+    defaultVolume: 0.85,
+  },
+  {
+    id: "tietmuc-12",
+    label: "12",
+    keyBind: null,
+    group: "tietmuc",
+    tag: "TIẾT MỤC",
+    type: "NHAC",
+    title: "Nhà Tôi Có Treo Một Lá Cờ",
+    subtitle: "",
+    src: "audio/tiet-muc/12-nha-toi-co-treo-mot-la-co.mp3",
+    defaultVolume: 0.85,
+  },
+  {
+    id: "tietmuc-13",
+    label: "13",
+    keyBind: null,
+    group: "tietmuc",
+    tag: "TIẾT MỤC",
+    type: "NHAC",
+    title: "Việt Nam dải lụa",
+    subtitle: "",
+    src: "audio/tiet-muc/13-VN-dai-lua.mp3",
+    defaultVolume: 0.85,
+  },
+  {
+    id: "tietmuc-14-15",
+    label: "14-15",
+    keyBind: null,
+    group: "tietmuc",
+    tag: "TIẾT MỤC",
+    type: "NHAC",
+    title: "Minh Sinh Là Số Một",
+    subtitle: "",
+    src: "audio/tiet-muc/14-15-minh-sinh-la-so-mot.wav",
+    defaultVolume: 0.85,
+  },
+
+  // ---------- NHÓM C — KỊCH (giữ nguyên, phím 3–8) ----------
+  {
+    id: "kich-1",
+    label: "3",
+    keyBind: 3,
     group: "kich",
     tag: "CẢNH 1",
     type: "FX",
@@ -35,7 +220,9 @@ const CUES = [
     defaultVolume: 0.9,
   },
   {
-    key: 4,
+    id: "kich-2",
+    label: "4",
+    keyBind: 4,
     group: "kich",
     tag: "CẢNH 1",
     type: "FX",
@@ -45,7 +232,9 @@ const CUES = [
     defaultVolume: 0.9,
   },
   {
-    key: 5,
+    id: "kich-3",
+    label: "5",
+    keyBind: 5,
     group: "kich",
     tag: "CẢNH 1",
     type: "CUE",
@@ -55,7 +244,9 @@ const CUES = [
     defaultVolume: 0.85,
   },
   {
-    key: 6,
+    id: "kich-4",
+    label: "6",
+    keyBind: 6,
     group: "kich",
     tag: "CẢNH 2",
     type: "NHAC",
@@ -65,7 +256,9 @@ const CUES = [
     defaultVolume: 0.75,
   },
   {
-    key: 7,
+    id: "kich-5",
+    label: "7",
+    keyBind: 7,
     group: "kich",
     tag: "CẢNH 4",
     type: "CUE",
@@ -75,7 +268,9 @@ const CUES = [
     defaultVolume: 0.9,
   },
   {
-    key: 8,
+    id: "kich-6",
+    label: "8",
+    keyBind: 8,
     group: "kich",
     tag: "CAO TRÀO",
     type: "NHAC",
@@ -92,15 +287,20 @@ const TYPE_LABEL = { NHAC: "NHẠC", FX: "FX", CUE: "CUE" };
 // FX luôn được phép chồng lên bất cứ thứ gì.
 const BACKGROUND_TYPES = new Set(["NHAC", "CUE"]);
 
+// Tra cứu nhanh cue theo phím tắt (1-8)
+const CUES_BY_KEYBIND = new Map(
+  CUES.filter((c) => c.keyBind != null).map((c) => [c.keyBind, c]),
+);
+
 const state = {
   singleBackground: true,
   fadeDuration: 1.6, // giây
   masterVolume: 0.85,
   masterMuted: false,
-  selectedKey: null, // cue được chọn gần nhất (cho phím "L")
+  selectedId: null, // cue được chọn gần nhất (cho phím "L")
 };
 
-const players = new Map(); // key -> { cue, audio, el, fading, loop, rafId }
+const players = new Map(); // id -> { cue, audio, el, fading, loop, waveTimer }
 
 const els = {};
 
@@ -109,6 +309,7 @@ document.addEventListener("DOMContentLoaded", init);
 function init() {
   cacheEls();
   initTheme();
+  initCompact();
   buildBoard();
   bindGlobalControls();
   bindKeyboard();
@@ -116,6 +317,29 @@ function init() {
   updateCueCountBadge();
   renderNowPlaying();
   updateStatusLine();
+  bindFooterResize();
+}
+
+// ------------------------------------------------------------
+// Tự đo chiều cao thanh trạng thái đáy để body chừa đủ chỗ
+// (quan trọng trên mobile khi nội dung xuống dòng hoặc danh sách
+// "đang phát" xuất hiện/dài ra)
+// ------------------------------------------------------------
+
+function bindFooterResize() {
+  const footer = document.querySelector(".status-bar");
+  if (!footer) return;
+
+  const update = () => {
+    document.body.style.paddingBottom = footer.offsetHeight + 14 + "px";
+  };
+  update();
+
+  if ("ResizeObserver" in window) {
+    new ResizeObserver(update).observe(footer);
+  } else {
+    window.addEventListener("resize", update);
+  }
 }
 
 // ------------------------------------------------------------
@@ -132,7 +356,8 @@ function initTheme() {
   setTheme(saved === "light" ? "light" : "dark");
 
   els.themeToggle.addEventListener("click", () => {
-    const next = document.documentElement.dataset.theme === "light" ? "dark" : "light";
+    const next =
+      document.documentElement.dataset.theme === "light" ? "dark" : "light";
     setTheme(next);
   });
 }
@@ -148,8 +373,41 @@ function setTheme(theme) {
   }
 }
 
+// ------------------------------------------------------------
+// Chế độ thu gọn thẻ (compact)
+// ------------------------------------------------------------
+
+function initCompact() {
+  let saved = null;
+  try {
+    saved = localStorage.getItem("trungthu-soundboard-compact");
+  } catch (e) {
+    /* bỏ qua */
+  }
+  setCompact(saved === "1");
+
+  els.compactToggle.addEventListener("click", () => {
+    setCompact(!document.body.classList.contains("compact-mode"));
+  });
+}
+
+function setCompact(on) {
+  document.body.classList.toggle("compact-mode", on);
+  els.compactToggle.querySelector("i").className = on
+    ? "bi bi-arrows-angle-expand"
+    : "bi bi-arrows-angle-contract";
+  els.compactToggle.classList.toggle("is-active", on);
+  els.compactToggle.title = on ? "Mở rộng thẻ cue" : "Thu gọn thẻ cue";
+  try {
+    localStorage.setItem("trungthu-soundboard-compact", on ? "1" : "0");
+  } catch (e) {
+    /* bỏ qua */
+  }
+}
+
 function cacheEls() {
   els.groupIntro = document.getElementById("group-intro");
+  els.groupTietMuc = document.getElementById("group-tietmuc");
   els.groupKich = document.getElementById("group-kich");
   els.singleBgToggle = document.getElementById("singleBgToggle");
   els.stopAllBtn = document.getElementById("stopAllBtn");
@@ -161,6 +419,7 @@ function cacheEls() {
   els.masterVolumeValue = document.getElementById("masterVolumeValue");
   els.masterMuteBtn = document.getElementById("masterMuteBtn");
   els.themeToggle = document.getElementById("themeToggle");
+  els.compactToggle = document.getElementById("compactToggle");
 }
 
 // ------------------------------------------------------------
@@ -169,10 +428,13 @@ function cacheEls() {
 
 function buildBoard() {
   CUES.filter((c) => c.group === "intro").forEach((cue) =>
-    els.groupIntro.appendChild(renderCueCard(cue))
+    els.groupIntro.appendChild(renderCueCard(cue)),
+  );
+  CUES.filter((c) => c.group === "tietmuc").forEach((cue) =>
+    els.groupTietMuc.appendChild(renderCueCard(cue)),
   );
   CUES.filter((c) => c.group === "kich").forEach((cue) =>
-    els.groupKich.appendChild(renderCueCard(cue))
+    els.groupKich.appendChild(renderCueCard(cue)),
   );
 }
 
@@ -180,16 +442,24 @@ function renderCueCard(cue) {
   const col = document.createElement("div");
   col.className = "col-12 col-sm-6 col-lg-4 col-xl-3";
 
+  const playTitle = cue.keyBind
+    ? `Phát / Tạm dừng (phím ${cue.keyBind})`
+    : "Phát / Tạm dừng (click)";
+  const watermarkClass =
+    cue.label.length > 2
+      ? "cue-watermark cue-watermark--wide"
+      : "cue-watermark";
+
   col.innerHTML = `
-    <div class="cue-card" data-key="${cue.key}" tabindex="0">
-      <div class="cue-watermark">${cue.key}</div>
+    <div class="cue-card" data-id="${cue.id}" data-group="${cue.group}" tabindex="0">
+      <div class="${watermarkClass}">${cue.label}</div>
       <div class="cue-head">
-        <span class="badge-tag">${cue.key}</span>
+        <span class="badge-tag">${cue.label}</span>
         <span class="badge-scene">${cue.tag}</span>
         <span class="badge-type badge-type--${cue.type}">${TYPE_LABEL[cue.type]}</span>
+        <h3 class="cue-title">${cue.title}</h3>
       </div>
-      <h3 class="cue-title">${cue.title}</h3>
-      <p class="cue-subtitle">${cue.subtitle}</p>
+      ${cue.subtitle ? `<p class="cue-subtitle">${cue.subtitle}</p>` : ""}
 
       <div class="cue-wave" data-role="wave">
         ${Array.from({ length: 28 })
@@ -197,16 +467,13 @@ function renderCueCard(cue) {
           .join("")}
       </div>
 
-      <div class="cue-seek-row">
+      <div class="cue-progress-line">
         <input type="range" class="form-range cue-seek" data-role="seek" min="0" max="1000" value="0" step="1" />
-      </div>
-      <div class="cue-time-row">
-        <span data-role="time-current">0:00</span>
-        <span data-role="time-total">0:00</span>
+        <span class="cue-time" data-role="time">0:00 / 0:00</span>
       </div>
 
       <div class="cue-controls">
-        <button class="ctrl-btn ctrl-btn--play" data-role="play" title="Phát / Tạm dừng (phím ${cue.key})">
+        <button class="ctrl-btn ctrl-btn--play" data-role="play" title="${playTitle}">
           <i class="bi bi-play-fill"></i>
         </button>
         <button class="ctrl-btn" data-role="stop" title="Dừng &amp; fade">
@@ -218,7 +485,7 @@ function renderCueCard(cue) {
         <span class="ctrl-vol">
           <i class="bi bi-volume-up" data-role="vol-icon"></i>
           <input type="range" class="form-range vol-range" data-role="volume" min="0" max="100" value="${Math.round(
-            (cue.defaultVolume ?? 0.85) * 100
+            (cue.defaultVolume ?? 0.85) * 100,
           )}" />
         </span>
       </div>
@@ -247,14 +514,14 @@ function setupCuePlayer(cue, cardEl) {
     loop: !!cue.defaultLoop,
     baseVolume: cue.defaultVolume ?? 0.85,
     waveTimer: null,
+    seeking: false,
   };
-  players.set(cue.key, player);
+  players.set(cue.id, player);
 
   const seek = cardEl.querySelector('[data-role="seek"]');
   const volRange = cardEl.querySelector('[data-role="volume"]');
   const volIcon = cardEl.querySelector('[data-role="vol-icon"]');
-  const timeCurrent = cardEl.querySelector('[data-role="time-current"]');
-  const timeTotal = cardEl.querySelector('[data-role="time-total"]');
+  const timeEl = cardEl.querySelector('[data-role="time"]');
   const playBtn = cardEl.querySelector('[data-role="play"]');
   const stopBtn = cardEl.querySelector('[data-role="stop"]');
   const loopBtn = cardEl.querySelector('[data-role="loop"]');
@@ -262,14 +529,14 @@ function setupCuePlayer(cue, cardEl) {
   if (player.loop) loopBtn.classList.add("is-active");
 
   audio.addEventListener("loadedmetadata", () => {
-    timeTotal.textContent = formatTime(audio.duration);
+    timeEl.textContent = `${formatTime(audio.currentTime)} / ${formatTime(audio.duration)}`;
   });
 
   audio.addEventListener("timeupdate", () => {
     if (!player.seeking && audio.duration) {
       seek.value = Math.round((audio.currentTime / audio.duration) * 1000);
     }
-    timeCurrent.textContent = formatTime(audio.currentTime);
+    timeEl.textContent = `${formatTime(audio.currentTime)} / ${formatTime(audio.duration)}`;
   });
 
   audio.addEventListener("ended", () => {
@@ -298,13 +565,13 @@ function setupCuePlayer(cue, cardEl) {
   });
 
   playBtn.addEventListener("click", () => {
-    selectCue(cue.key);
-    togglePlay(cue.key);
+    selectCue(cue.id);
+    togglePlay(cue.id);
   });
 
   stopBtn.addEventListener("click", () => {
-    selectCue(cue.key);
-    fadeStop(cue.key, state.fadeDuration);
+    selectCue(cue.id);
+    fadeStop(cue.id, state.fadeDuration);
   });
 
   loopBtn.addEventListener("click", () => {
@@ -315,7 +582,7 @@ function setupCuePlayer(cue, cardEl) {
   seek.addEventListener("input", () => {
     player.seeking = true;
     if (audio.duration) {
-      timeCurrent.textContent = formatTime((seek.value / 1000) * audio.duration);
+      timeEl.textContent = `${formatTime((seek.value / 1000) * audio.duration)} / ${formatTime(audio.duration)}`;
     }
   });
   seek.addEventListener("change", () => {
@@ -329,7 +596,12 @@ function setupCuePlayer(cue, cardEl) {
     player.baseVolume = volRange.value / 100;
     applyVolume(player);
     volIcon.className =
-      "bi " + (player.baseVolume === 0 ? "bi-volume-mute" : player.baseVolume < 0.5 ? "bi-volume-down" : "bi-volume-up");
+      "bi " +
+      (player.baseVolume === 0
+        ? "bi-volume-mute"
+        : player.baseVolume < 0.5
+          ? "bi-volume-down"
+          : "bi-volume-up");
     savePrefs();
   });
 
@@ -337,7 +609,7 @@ function setupCuePlayer(cue, cardEl) {
 
   cardEl.addEventListener("click", (e) => {
     if (!e.target.closest("input") && !e.target.closest("button")) {
-      selectCue(cue.key);
+      selectCue(cue.id);
     }
   });
 }
@@ -352,8 +624,8 @@ function setCardPlayingState(player, isPlaying) {
 // Phát / dừng / fade
 // ------------------------------------------------------------
 
-function togglePlay(key) {
-  const player = players.get(key);
+function togglePlay(id) {
+  const player = players.get(id);
   if (!player) return;
 
   if (!player.audio.paused) {
@@ -365,27 +637,29 @@ function togglePlay(key) {
   applyVolume(player);
 
   // "Một nền nhạc": khi bật, cue thuộc nhóm nền (NHAC/CUE) sẽ làm fade-dừng
-  // các cue nền khác đang phát. FX luôn được phép chồng.
+  // các cue nền khác đang phát (bất kể thuộc nhóm A/B/C nào). FX luôn được phép chồng.
   if (state.singleBackground && BACKGROUND_TYPES.has(player.cue.type)) {
-    players.forEach((other, otherKey) => {
+    players.forEach((other, otherId) => {
       if (
-        otherKey !== key &&
+        otherId !== id &&
         BACKGROUND_TYPES.has(other.cue.type) &&
         !other.audio.paused
       ) {
-        fadeStop(otherKey, state.fadeDuration);
+        fadeStop(otherId, state.fadeDuration);
       }
     });
   }
 
   player.audio.play().catch((err) => {
     console.error("Không phát được:", player.cue.title, err);
-    flashStatus(`Không thể phát "${player.cue.title}". Kiểm tra lại file âm thanh.`);
+    flashStatus(
+      `Không thể phát "${player.cue.title}". Kiểm tra lại file âm thanh.`,
+    );
   });
 }
 
-function fadeStop(key, duration) {
-  const player = players.get(key);
+function fadeStop(id, duration) {
+  const player = players.get(id);
   if (!player || player.audio.paused) return;
   if (player.fading) return;
 
@@ -411,27 +685,18 @@ function fadeStop(key, duration) {
   requestAnimationFrame(step);
 }
 
-function hardStop(key) {
-  const player = players.get(key);
-  if (!player) return;
-  player.fading = false;
-  player.audio.pause();
-  player.audio.currentTime = 0;
-  applyVolume(player);
-}
-
 function fadeStopAll(duration) {
   let any = false;
-  players.forEach((player, key) => {
+  players.forEach((player, id) => {
     if (!player.audio.paused) {
       any = true;
-      fadeStop(key, duration);
+      fadeStop(id, duration);
     }
   });
   flashStatus(
     any
       ? `Đang dừng dần tất cả (fade ${duration.toFixed(1)}s)…`
-      : "Không có cue nào đang phát."
+      : "Không có cue nào đang phát.",
   );
 }
 
@@ -475,10 +740,10 @@ function stopWave(player) {
 // Chọn cue hiện hành (dùng cho phím "L")
 // ------------------------------------------------------------
 
-function selectCue(key) {
-  state.selectedKey = key;
+function selectCue(id) {
+  state.selectedId = id;
   document.querySelectorAll(".cue-card").forEach((c) => {
-    c.classList.toggle("is-selected", Number(c.dataset.key) === key);
+    c.classList.toggle("is-selected", c.dataset.id === id);
   });
 }
 
@@ -493,7 +758,9 @@ function bindGlobalControls() {
     savePrefs();
   });
 
-  els.stopAllBtn.addEventListener("click", () => fadeStopAll(state.fadeDuration));
+  els.stopAllBtn.addEventListener("click", () =>
+    fadeStopAll(state.fadeDuration),
+  );
 
   els.fadeInput.value = state.fadeDuration;
   els.fadeInput.addEventListener("change", () => {
@@ -548,7 +815,7 @@ function flashStatus(text) {
 
 function updateStatusLine() {
   els.statusLine.textContent =
-    "Sẵn sàng — phím 1–8 phát cue, Space dừng dần (fade), L lặp cue đang chọn.";
+    "Sẵn sàng — phím 1–8 phát cue (nhóm Giới thiệu & Kịch), Tiết Mục chỉ click, Space dừng dần (fade), L lặp cue đang chọn.";
 }
 
 function renderNowPlaying() {
@@ -564,9 +831,9 @@ function renderNowPlaying() {
   playing.forEach((p) => {
     const row = document.createElement("div");
     row.className = "now-row";
-    row.dataset.key = p.cue.key;
+    row.dataset.id = p.cue.id;
     row.innerHTML = `
-      <span class="now-key">${p.cue.key}</span>
+      <span class="now-key">${p.cue.label}</span>
       <span class="now-title">${p.cue.title}</span>
       <span class="now-time" data-role="now-time">0:00 / 0:00</span>
       <div class="now-progress"><div class="now-progress-fill" data-role="now-fill"></div></div>
@@ -574,9 +841,11 @@ function renderNowPlaying() {
         <i class="bi bi-square-fill"></i>
       </button>
     `;
-    row.querySelector('[data-role="now-stop"]').addEventListener("click", () => {
-      fadeStop(p.cue.key, state.fadeDuration);
-    });
+    row
+      .querySelector('[data-role="now-stop"]')
+      .addEventListener("click", () => {
+        fadeStop(p.cue.id, state.fadeDuration);
+      });
     els.nowPlayingBar.appendChild(row);
   });
 
@@ -590,8 +859,8 @@ function tickNowPlaying() {
   if (!rows.length) return;
 
   rows.forEach((row) => {
-    const key = Number(row.dataset.key);
-    const player = players.get(key);
+    const id = row.dataset.id;
+    const player = players.get(id);
     if (!player || player.audio.paused) return;
     const { currentTime, duration } = player.audio;
     const fill = row.querySelector('[data-role="now-fill"]');
@@ -614,10 +883,11 @@ function bindKeyboard() {
     if (e.target.matches("input, textarea")) return;
 
     if (e.code >= "Digit1" && e.code <= "Digit8") {
-      const key = Number(e.code.replace("Digit", ""));
-      if (players.has(key)) {
-        selectCue(key);
-        togglePlay(key);
+      const digit = Number(e.code.replace("Digit", ""));
+      const cue = CUES_BY_KEYBIND.get(digit);
+      if (cue) {
+        selectCue(cue.id);
+        togglePlay(cue.id);
       }
       e.preventDefault();
       return;
@@ -630,14 +900,14 @@ function bindKeyboard() {
     }
 
     if (e.key.toLowerCase() === "l") {
-      if (state.selectedKey && players.has(state.selectedKey)) {
-        const player = players.get(state.selectedKey);
+      if (state.selectedId && players.has(state.selectedId)) {
+        const player = players.get(state.selectedId);
         player.loop = !player.loop;
         player.el
           .querySelector('[data-role="loop"]')
           .classList.toggle("is-active", player.loop);
         flashStatus(
-          `Lặp lại "${player.cue.title}": ${player.loop ? "BẬT" : "TẮT"}.`
+          `Lặp lại "${player.cue.title}": ${player.loop ? "BẬT" : "TẮT"}.`,
         );
       } else {
         flashStatus("Chưa chọn cue nào để bật/tắt lặp. Bấm vào một thẻ trước.");
@@ -656,7 +926,7 @@ function bindKeyboard() {
 
 function savePrefs() {
   const volumes = {};
-  players.forEach((p, key) => (volumes[key] = Math.round(p.baseVolume * 100)));
+  players.forEach((p, id) => (volumes[id] = Math.round(p.baseVolume * 100)));
   const prefs = {
     singleBackground: state.singleBackground,
     fadeDuration: state.fadeDuration,
@@ -699,8 +969,8 @@ function restorePrefs() {
       updateMasterMuteIcon();
     }
     if (prefs.volumes) {
-      Object.entries(prefs.volumes).forEach(([key, vol]) => {
-        const player = players.get(Number(key));
+      Object.entries(prefs.volumes).forEach(([id, vol]) => {
+        const player = players.get(id);
         if (player) {
           player.baseVolume = vol / 100;
           const volRange = player.el.querySelector('[data-role="volume"]');

@@ -25,13 +25,18 @@
     </div>
     <h1 class="app-title">Điều khiển âm thanh - DUOC</h1>
     <p class="app-desc">
-      Bảng điều khiển nhạc và hiệu ứng cho đêm diễn. Phím 1–8 phát cue tương ứng,
-      Space dừng dần tất cả (fade), L bật/tắt lặp cho cue đang chọn.
+      Bảng điều khiển nhạc và hiệu ứng cho đêm diễn. Phím 1–8 phát cue ở nhóm
+      Giới thiệu &amp; Kịch, nhóm Tiết Mục chỉ cần click. Space dừng dần tất cả (fade),
+      L bật/tắt lặp cho cue đang chọn.
     </p>
 
     <div class="global-bar">
       <button class="theme-toggle" id="themeToggle" title="Đổi giao diện sáng/tối">
         <i class="bi bi-moon-stars-fill"></i>
+      </button>
+
+      <button class="theme-toggle" id="compactToggle" title="Thu gọn thẻ cue">
+        <i class="bi bi-arrows-angle-contract"></i>
       </button>
 
       <div class="pill">
@@ -75,10 +80,21 @@
       <div class="row g-2" id="group-intro"></div>
     </section>
 
-    <section class="group-block" id="section-kich">
+    <section class="group-block" id="section-tietmuc">
       <div class="group-header">
         <div>
           <div class="group-eyebrow">NHÓM B</div>
+          <h2 class="group-title">Tiết Mục</h2>
+        </div>
+        <div class="group-keys">Chỉ click — không có phím tắt</div>
+      </div>
+      <div class="row g-2" id="group-tietmuc"></div>
+    </section>
+
+    <section class="group-block" id="section-kich">
+      <div class="group-header">
+        <div>
+          <div class="group-eyebrow">NHÓM C</div>
           <h2 class="group-title">Kịch</h2>
         </div>
         <div class="group-keys">Phím 3 – 8</div>
@@ -93,7 +109,7 @@
     <div class="status-line-row">
       <div class="status-line">
         <i class="bi bi-keyboard"></i>
-        <span id="statusLine">Sẵn sàng — phím 1–8 phát cue, Space dừng dần (fade), L lặp cue đang chọn.</span>
+        <span id="statusLine">Sẵn sàng — phím 1–8 phát cue (nhóm Giới thiệu & Kịch), Tiết Mục chỉ click, Space dừng dần (fade), L lặp cue đang chọn.</span>
       </div>
       <div class="master-vol">
         <button class="master-mute-btn" id="masterMuteBtn" title="Tắt/mở tiếng tổng">

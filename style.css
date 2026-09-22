@@ -55,7 +55,9 @@ body {
 
 body {
   padding-bottom: 92px; /* chừa chỗ cho thanh trạng thái cố định đáy */
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
 
 ::selection {
@@ -119,16 +121,26 @@ body {
   justify-content: center;
   font-size: 1rem;
   flex: 0 0 auto;
-  transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.1s ease;
 }
 
 .theme-toggle:hover {
-  background: var(--surface-hover);
-  border-color: var(--text-faint);
+  background: var(--moon-soft);
+  border-color: var(--moon);
+  color: var(--moon);
 }
 
 .theme-toggle:active {
   transform: scale(0.94);
+}
+
+.theme-toggle.is-active {
+  background: var(--moon-soft);
+  border-color: var(--moon);
+  color: var(--moon);
 }
 
 .pill {
@@ -163,8 +175,12 @@ body {
 }
 
 .form-switch .form-check-input:checked {
-  background-color: var(--moon);
-  border-color: var(--moon);
+  background-color: var(--lantern);
+  border-color: var(--lantern);
+}
+
+.form-switch .form-check-input:hover {
+  box-shadow: 0 0 0 3px var(--moon-soft);
 }
 
 .form-switch .form-check-input:focus {
@@ -182,7 +198,9 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  transition: background 0.15s ease, transform 0.1s ease;
+  transition:
+    background 0.15s ease,
+    transform 0.1s ease;
 }
 
 .btn-stopall:hover {
@@ -283,7 +301,9 @@ body {
   border-radius: var(--radius-lg);
   padding: 13px 14px 12px;
   overflow: hidden;
-  transition: border-color 0.18s ease, background 0.18s ease;
+  transition:
+    border-color 0.18s ease,
+    background 0.18s ease;
   height: 100%;
 }
 
@@ -297,7 +317,9 @@ body {
 
 .cue-card.is-playing {
   border-color: var(--moon);
-  box-shadow: 0 0 0 1px rgba(232, 185, 90, 0.25), 0 8px 28px -12px rgba(232, 185, 90, 0.35);
+  box-shadow:
+    0 0 0 1px rgba(232, 185, 90, 0.25),
+    0 8px 28px -12px rgba(232, 185, 90, 0.35);
 }
 
 .cue-watermark {
@@ -311,6 +333,12 @@ body {
   line-height: 1;
   pointer-events: none;
   user-select: none;
+  white-space: nowrap;
+}
+
+.cue-watermark--wide {
+  font-size: 1.5rem;
+  top: -2px;
 }
 
 .cue-head {
@@ -322,8 +350,9 @@ body {
 }
 
 .badge-tag {
-  width: 19px;
+  min-width: 19px;
   height: 19px;
+  padding: 0 5px;
   border-radius: 5px;
   background: var(--bg-soft);
   border: 1px solid var(--border);
@@ -333,6 +362,7 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  white-space: nowrap;
 }
 
 .badge-scene {
@@ -370,9 +400,10 @@ body {
 }
 
 .cue-title {
+  flex: 1 1 100%; /* buộc xuống dòng riêng bên dưới các badge ở chế độ thường */
   font-size: 0.92rem;
   font-weight: 700;
-  margin: 0 0 1px;
+  margin: 4px 0 1px;
   position: relative;
   z-index: 1;
 }
@@ -408,31 +439,37 @@ body {
   height: 6%;
   background: var(--text-faint);
   border-radius: 2px;
-  transition: height 0.09s linear, background 0.2s ease;
+  transition:
+    height 0.09s linear,
+    background 0.2s ease;
 }
 
 .cue-wave.is-live .wave-bar {
   background: var(--moon);
 }
 
-/* Seek */
+/* Progress bar + thời gian gộp cùng một dòng */
 
-.cue-seek-row {
+.cue-progress-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 10px;
   position: relative;
   z-index: 1;
 }
 
-.form-range.cue-seek {
-  width: 100%;
+.cue-progress-line .cue-seek {
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
-.cue-time-row {
-  display: flex;
-  justify-content: space-between;
+.cue-time {
+  flex: 0 0 auto;
   font-size: 0.68rem;
   color: var(--text-faint);
-  margin: 0 0 9px;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 /* Range slider base styling */
@@ -495,12 +532,16 @@ body {
   justify-content: center;
   font-size: 0.9rem;
   flex: 0 0 auto;
-  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .ctrl-btn:hover {
-  background: var(--surface-hover);
-  border-color: var(--text-faint);
+  background: var(--moon-soft);
+  border-color: var(--moon);
+  color: var(--moon);
 }
 
 .ctrl-btn.is-active {
@@ -665,11 +706,25 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.master-mute-btn:hover {
+  background: var(--moon-soft);
+  border-color: var(--moon);
+  color: var(--moon);
 }
 
 .master-mute-btn.is-active {
   color: var(--lantern);
   border-color: var(--lantern);
+}
+
+.master-mute-btn.is-active:hover {
+  background: var(--lantern-soft);
 }
 
 /* ---------- Scrollbar ---------- */
@@ -697,6 +752,157 @@ body {
   .status-line {
     flex-basis: 100%;
   }
+}
+
+@media (max-width: 575.98px) {
+  .app-header {
+    padding: 18px 16px 16px;
+  }
+
+  .brand-row {
+    font-size: 0.74rem;
+  }
+
+  .global-bar {
+    gap: 8px;
+  }
+
+  .theme-toggle {
+    width: 36px;
+    height: 36px;
+    font-size: 0.92rem;
+  }
+
+  .pill {
+    padding: 8px 12px;
+    gap: 8px;
+  }
+
+  .btn-stopall {
+    padding: 8px 14px;
+    font-size: 0.8rem;
+  }
+
+  .fade-field input {
+    width: 46px;
+  }
+
+  .board {
+    padding: 6px 16px 16px;
+  }
+
+  .group-block {
+    margin-top: 20px;
+  }
+
+  .group-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    margin-bottom: 10px;
+  }
+
+  .now-row {
+    grid-template-columns: 16px minmax(0, 1fr) auto;
+    gap: 8px;
+    font-size: 0.76rem;
+  }
+
+  .now-playing {
+    padding: 6px 16px 0;
+  }
+
+  .status-line-row {
+    padding: 8px 16px;
+    gap: 10px;
+  }
+
+  .status-line {
+    font-size: 0.75rem;
+  }
+
+  .master-vol {
+    gap: 8px;
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .master-vol .form-range {
+    width: 100%;
+    flex: 1 1 auto;
+  }
+}
+
+/* ---------- Chế độ thu gọn thẻ (compact) ---------- */
+
+body.compact-mode .cue-card {
+  padding: 9px 11px 8px;
+}
+
+body.compact-mode .cue-watermark,
+body.compact-mode .cue-subtitle,
+body.compact-mode .cue-wave,
+body.compact-mode .ctrl-vol,
+body.compact-mode .badge-scene,
+body.compact-mode .badge-type {
+  display: none;
+}
+
+body.compact-mode .cue-head {
+  flex-wrap: nowrap;
+  margin-bottom: 6px;
+}
+
+body.compact-mode .cue-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  font-size: 0.82rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+body.compact-mode .cue-progress-line {
+  margin-bottom: 7px;
+}
+
+body.compact-mode .cue-controls {
+  gap: 6px;
+}
+
+body.compact-mode .ctrl-btn {
+  width: 25px;
+  height: 25px;
+  font-size: 0.74rem;
+  border-radius: 6px;
+}
+
+/* Thanh progress mỏng, bỏ chấm tròn, khi ở chế độ thu gọn */
+body.compact-mode .cue-seek {
+  height: 0.6rem;
+}
+
+body.compact-mode .cue-seek::-webkit-slider-runnable-track {
+  height: 3px;
+}
+
+body.compact-mode .cue-seek::-webkit-slider-thumb {
+  width: 0;
+  height: 0;
+  opacity: 0;
+  margin-top: 0;
+}
+
+body.compact-mode .cue-seek::-moz-range-track {
+  height: 3px;
+}
+
+body.compact-mode .cue-seek::-moz-range-thumb {
+  width: 0;
+  height: 0;
+  opacity: 0;
+  border: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
