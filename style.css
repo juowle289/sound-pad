@@ -641,7 +641,7 @@ body {
 .now-progress-fill {
   height: 100%;
   width: 0%;
-  background: var(--lantern);
+  background: var(--moon);
   transition: width 0.08s linear;
 }
 

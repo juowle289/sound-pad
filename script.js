@@ -70,7 +70,7 @@ const CUES = [
     type: "NHAC",
     title: "Mashup Thanh Xuân",
     subtitle: "",
-    src: "audio/tiet-muc/3-mashup-thanh-xuan.mp3",
+    src: "audio/tiet-muc/3-mashup-thanh-xuan(1).mp3",
     defaultVolume: 0.85,
   },
   {
