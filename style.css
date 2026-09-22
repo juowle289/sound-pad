@@ -756,10 +756,32 @@ body {
   }
 
   .now-row {
-    grid-template-columns: 18px minmax(0, 1fr) auto;
+    grid-template-columns: auto 18px minmax(0, 1fr) auto;
+    grid-template-areas:
+      "stop key title time"
+      "progress progress progress progress";
+    row-gap: 8px;
   }
+
+  .now-key {
+    grid-area: key;
+  }
+
+  .now-title {
+    grid-area: title;
+  }
+
+  .now-time {
+    grid-area: time;
+  }
+
   .now-progress {
+    grid-area: progress;
     display: block;
+  }
+
+  .now-stop {
+    grid-area: stop;
   }
   .master-vol .form-range {
     width: 90px;
@@ -818,7 +840,7 @@ body {
   }
 
   .now-row {
-    grid-template-columns: 16px minmax(0, 1fr) auto;
+    grid-template-columns: auto 16px minmax(0, 1fr) auto;
     gap: 8px;
     font-size: 0.76rem;
   }
