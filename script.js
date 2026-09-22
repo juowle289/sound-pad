@@ -354,7 +354,7 @@ function initTheme() {
   } catch (e) {
     /* bỏ qua */
   }
-  setTheme(saved === "light" ? "light" : "dark");
+  setTheme(saved === "dark" ? "dark" : "light");
 
   els.themeToggle.addEventListener("click", () => {
     const next =
@@ -873,7 +873,7 @@ function renderNowPlaying() {
       <span class="now-key">${p.cue.label}</span>
       <span class="now-title">${p.cue.title}</span>
       <span class="now-time" data-role="now-time">0:00 / 0:00</span>
-      <div class="now-progress"><div class="now-progress-fill" data-role="now-fill"></div></div>
+      <input class="now-progress" data-role="now-seek" type="range" min="0" max="1000" value="0" step="1" aria-label="Tua đến vị trí trong cue" />
       <button class="now-stop" data-role="now-stop" title="Dừng &amp; fade">
         <i class="bi bi-square-fill"></i>
       </button>
@@ -883,6 +883,12 @@ function renderNowPlaying() {
       .addEventListener("click", () => {
         fadeStop(p.cue.id, state.fadeDuration);
       });
+    const nowSeek = row.querySelector('[data-role="now-seek"]');
+    nowSeek.addEventListener("input", () => {
+      if (p.audio.duration) {
+        p.audio.currentTime = (nowSeek.value / 1000) * p.audio.duration;
+      }
+    });
     els.nowPlayingBar.appendChild(row);
   });
 
@@ -900,10 +906,12 @@ function tickNowPlaying() {
     const player = players.get(id);
     if (!player || player.audio.paused) return;
     const { currentTime, duration } = player.audio;
-    const fill = row.querySelector('[data-role="now-fill"]');
+    const seek = row.querySelector('[data-role="now-seek"]');
     const timeEl = row.querySelector('[data-role="now-time"]');
     if (duration) {
-      fill.style.width = `${(currentTime / duration) * 100}%`;
+      if (document.activeElement !== seek) {
+        seek.value = Math.round((currentTime / duration) * 1000);
+      }
     }
     timeEl.textContent = `${formatTime(currentTime)} / ${formatTime(duration)}`;
   });
