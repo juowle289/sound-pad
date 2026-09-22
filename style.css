@@ -462,6 +462,12 @@ body {
 .cue-progress-line .cue-seek {
   flex: 1 1 auto;
   min-width: 0;
+  accent-color: var(--lantern);
+}
+
+.cue-progress-line .cue-seek::-webkit-slider-runnable-track,
+.cue-progress-line .cue-seek::-moz-range-track {
+  background: transparent;
 }
 
 .cue-time {
@@ -635,7 +641,8 @@ body {
 .now-progress-fill {
   height: 100%;
   width: 0%;
-  background: var(--moon);
+  background: var(--lantern);
+  transition: width 0.08s linear;
 }
 
 .now-stop {
@@ -740,17 +747,25 @@ body {
 /* ---------- Responsive ---------- */
 
 @media (max-width: 767.98px) {
+  .app-desc {
+    display: none;
+  }
+
+  .group-keys {
+    display: none;
+  }
+
   .now-row {
     grid-template-columns: 18px minmax(0, 1fr) auto;
   }
   .now-progress {
-    display: none;
+    display: block;
   }
   .master-vol .form-range {
     width: 90px;
   }
   .status-line {
-    flex-basis: 100%;
+    display: none;
   }
 }
 
