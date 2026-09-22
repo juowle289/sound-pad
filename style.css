@@ -755,6 +755,31 @@ body {
     display: none;
   }
 
+  .cue-progress-line {
+    margin-bottom: 8px;
+  }
+
+  .cue-progress-line .cue-seek {
+    display: none;
+  }
+
+  .cue-time {
+    font-size: 0.75rem;
+  }
+
+  .cue-controls {
+    gap: 10px;
+  }
+
+  .ctrl-btn {
+    width: 34px;
+    height: 34px;
+  }
+
+  .ctrl-vol .form-range {
+    min-height: 32px;
+  }
+
   .now-row {
     grid-template-columns: auto 18px minmax(0, 1fr) auto;
     grid-template-areas:

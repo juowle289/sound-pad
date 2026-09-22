@@ -301,6 +301,7 @@ const state = {
 };
 
 const players = new Map(); // id -> { cue, audio, el, fading, loop, waveTimer }
+let audioContext = null;
 
 const els = {};
 
@@ -515,6 +516,7 @@ function setupCuePlayer(cue, cardEl) {
     baseVolume: cue.defaultVolume ?? 0.85,
     waveTimer: null,
     seeking: false,
+    gainNode: null,
   };
   players.set(cue.id, player);
 
@@ -634,6 +636,7 @@ function togglePlay(id) {
   }
 
   player.fading = false;
+  resumeAudioContext(player);
   applyVolume(player);
 
   // "Một nền nhạc": khi bật, cue thuộc nhóm nền (NHAC/CUE) sẽ làm fade-dừng
@@ -665,14 +668,14 @@ function fadeStop(id, duration) {
 
   player.fading = true;
   const audio = player.audio;
-  const startVol = audio.volume;
+  const startVol = player.gainNode ? player.gainNode.gain.value : audio.volume;
   const startTime = performance.now();
   const durMs = Math.max(duration, 0.05) * 1000;
 
   function step(now) {
     if (!player.fading) return; // đã bị huỷ / phát lại
     const t = Math.min(1, (now - startTime) / durMs);
-    audio.volume = startVol * (1 - t);
+    setPlayerOutputVolume(player, startVol * (1 - t));
     if (t < 1) {
       requestAnimationFrame(step);
     } else {
@@ -702,7 +705,41 @@ function fadeStopAll(duration) {
 
 function applyVolume(player) {
   const master = state.masterMuted ? 0 : state.masterVolume;
-  player.audio.volume = Math.max(0, Math.min(1, player.baseVolume * master));
+  setPlayerOutputVolume(player, player.baseVolume * master);
+}
+
+function resumeAudioContext(player) {
+  if (!window.AudioContext && !window.webkitAudioContext) return;
+
+  try {
+    if (!audioContext) {
+      const AudioContextClass =
+        window.AudioContext || window.webkitAudioContext;
+      audioContext = new AudioContextClass();
+    }
+    if (!player.gainNode) {
+      const source = audioContext.createMediaElementSource(player.audio);
+      player.gainNode = audioContext.createGain();
+      source.connect(player.gainNode);
+      player.gainNode.connect(audioContext.destination);
+      player.gainNode.gain.value = player.audio.volume;
+      player.audio.volume = 1;
+    }
+    if (audioContext.state === "suspended")
+      audioContext.resume().catch(() => {});
+  } catch (error) {
+    // Keep the native audio path when Web Audio is unavailable.
+    player.gainNode = null;
+  }
+}
+
+function setPlayerOutputVolume(player, volume) {
+  const safeVolume = Math.max(0, Math.min(1, volume));
+  if (player.gainNode) {
+    player.gainNode.gain.value = safeVolume;
+  } else {
+    player.audio.volume = safeVolume;
+  }
 }
 
 function applyMasterVolumeToAll() {
