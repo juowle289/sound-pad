@@ -256,6 +256,18 @@ const CUES = [
     defaultVolume: 0.75,
   },
   {
+    id: "kich-4b",
+    label: "C3",
+    keyBind: null,
+    group: "kich",
+    tag: "CẢNH 3",
+    type: "FX",
+    title: "Cuội nhảy -Choi San-",
+    subtitle: "Hiệu ứng cảnh 3",
+    src: "audio/kich/c3-choisan.mp3",
+    defaultVolume: 0.9,
+  },
+  {
     id: "kich-5",
     label: "7",
     keyBind: 7,
