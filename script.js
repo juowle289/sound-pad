@@ -46,7 +46,7 @@ const CUES = [
     type: "NHAC",
     title: "Chiếc Đèn Ông Sao",
     subtitle: "",
-    src: "audio/tiet-muc/1-chiec-den-ong-sao.mp3",
+    src: "audio/tiet-muc/1-chiec-den-ong-sao(1).mp3",
     defaultVolume: 0.85,
   },
   {
