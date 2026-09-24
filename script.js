@@ -12,6 +12,18 @@
 const CUES = [
   // ---------- NHÓM A — GIỚI THIỆU ----------
   {
+    id: "intro-0",
+    label: "0",
+    keyBind: 0,
+    group: "intro",
+    tag: "NHÓM A",
+    type: "NHAC",
+    title: "Nhạc Nền",
+    subtitle: "Liên khúc nhạc Trung Thu",
+    src: "audio/lien-khuc-nhac-trung-thu.mp3",
+    defaultVolume: 0.85,
+  },
+  {
     id: "intro-1",
     label: "1",
     keyBind: 1,
@@ -33,6 +45,18 @@ const CUES = [
     title: "Bước lên sân khấu",
     subtitle: "Nhạc dẫn vào chương trình",
     src: "audio/buoc-len-san-khau.mp3",
+    defaultVolume: 0.85,
+  },
+  {
+    id: "intro-3",
+    label: "3",
+    keyBind: 3,
+    group: "intro",
+    tag: "GIỚI THIỆU",
+    type: "NHAC",
+    title: "Tặng hoa",
+    subtitle: "Nhạc chúc mừng / tặng hoa",
+    src: "audio/tang-hoa.mp3",
     defaultVolume: 0.85,
   },
 
@@ -209,8 +233,8 @@ const CUES = [
   // ---------- NHÓM C — KỊCH (giữ nguyên, phím 3–8) ----------
   {
     id: "kich-1",
-    label: "3",
-    keyBind: 3,
+    label: "4",
+    keyBind: 4,
     group: "kich",
     tag: "CẢNH 1",
     type: "FX",
@@ -221,8 +245,8 @@ const CUES = [
   },
   {
     id: "kich-2",
-    label: "4",
-    keyBind: 4,
+    label: "5",
+    keyBind: 5,
     group: "kich",
     tag: "CẢNH 1",
     type: "FX",
@@ -230,18 +254,6 @@ const CUES = [
     subtitle: "Trống dồn · báo hiệu",
     src: "audio/kich/c1-tinhtu-soc.wav",
     defaultVolume: 0.9,
-  },
-  {
-    id: "kich-3",
-    label: "5",
-    keyBind: 5,
-    group: "kich",
-    tag: "CẢNH 1",
-    type: "CUE",
-    title: "Tinh Tú khóc",
-    subtitle: "Nhạc cinematic buồn",
-    src: "audio/kich/c1-tinhtu-khoc.mp3",
-    defaultVolume: 0.85,
   },
   {
     id: "kich-4",
@@ -256,9 +268,21 @@ const CUES = [
     defaultVolume: 0.75,
   },
   {
-    id: "kich-4b",
-    label: "C3",
+    id: "kich-7",
+    label: "7",
     keyBind: null,
+    group: "kich",
+    tag: "CẢNH 3",
+    type: "FX",
+    title: "Thần Nghệ Thuật xuất hiện",
+    subtitle: "Hiệu ứng cảnh 3",
+    src: "audio/c3-than-Nghe-Thuat-xuat-hien.m4a",
+    defaultVolume: 0.9,
+  },
+  {
+    id: "kich-4b",
+    label: "8",
+    keyBind: 8,
     group: "kich",
     tag: "CẢNH 3",
     type: "FX",
@@ -269,8 +293,8 @@ const CUES = [
   },
   {
     id: "kich-5",
-    label: "7",
-    keyBind: 7,
+    label: "9",
+    keyBind: 9,
     group: "kich",
     tag: "CẢNH 4",
     type: "CUE",
@@ -281,16 +305,28 @@ const CUES = [
   },
   {
     id: "kich-6",
-    label: "8",
-    keyBind: 8,
+    label: "10",
+    keyBind: null,
     group: "kich",
     tag: "CAO TRÀO",
     type: "NHAC",
-    title: "Trăng ơi sáng lên",
+    title: "Chiếc Đèn Ông Sao",
     subtitle: "Khúc khải hoàn · có thể lặp",
-    src: "audio/trang-oi-sang-len.mp3",
+    src: "audio/tiet-muc/1-chiec-den-ong-sao(1).mp3",
     defaultVolume: 0.85,
     defaultLoop: true,
+  },
+  {
+    id: "kich-final",
+    label: "11",
+    keyBind: null,
+    group: "kich",
+    tag: "KẾT THÚC",
+    type: "NHAC",
+    title: "Kết Thúc-Phá Cỗ",
+    subtitle: "Như Có Bác Hồ Trong Ngày Vui Đại Thắng",
+    src: "audio/nhu-co-bac-ho-trong-ngay-vui-dai-thang.mp3",
+    defaultVolume: 0.85,
   },
 ];
 
@@ -937,9 +973,21 @@ function tickNowPlaying() {
 
 function bindKeyboard() {
   window.addEventListener("keydown", (e) => {
-    if (e.target.matches("input, textarea")) return;
+    const target = e.target;
+    const isTextEntry =
+      target instanceof HTMLElement &&
+      (target.matches("textarea") ||
+        target.matches("input:not([type='range'])") ||
+        target.isContentEditable);
 
-    if (e.code >= "Digit1" && e.code <= "Digit8") {
+    if (isTextEntry) return;
+
+    const activeEl = document.activeElement;
+    if (activeEl && activeEl.matches("input[type='range']")) {
+      activeEl.blur();
+    }
+
+    if (/^Digit[0-9]$/.test(e.code)) {
       const digit = Number(e.code.replace("Digit", ""));
       const cue = CUES_BY_KEYBIND.get(digit);
       if (cue) {
