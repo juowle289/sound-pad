@@ -331,6 +331,7 @@ const CUES = [
 ];
 
 const TYPE_LABEL = { NHAC: "NHẠC", FX: "FX", CUE: "CUE" };
+const MAX_OUTPUT_GAIN = 2.5; // cho phép tăng âm lượng tối đa 250%
 // Các loại được coi là "nền" — độc quyền khi bật "Một nền nhạc".
 // FX luôn được phép chồng lên bất cứ thứ gì.
 const BACKGROUND_TYPES = new Set(["NHAC", "CUE"]);
@@ -533,7 +534,7 @@ function renderCueCard(cue) {
         </button>
         <span class="ctrl-vol">
           <i class="bi bi-volume-up" data-role="vol-icon"></i>
-          <input type="range" class="form-range vol-range" data-role="volume" min="0" max="100" value="${Math.round(
+          <input type="range" class="form-range vol-range" data-role="volume" min="0" max="200" value="${Math.round(
             (cue.defaultVolume ?? 0.85) * 100,
           )}" />
         </span>
@@ -753,7 +754,8 @@ function fadeStopAll(duration) {
 
 function applyVolume(player) {
   const master = state.masterMuted ? 0 : state.masterVolume;
-  setPlayerOutputVolume(player, player.baseVolume * master);
+  const targetVolume = player.baseVolume * master;
+  setPlayerOutputVolume(player, targetVolume);
 }
 
 function resumeAudioContext(player) {
@@ -782,11 +784,11 @@ function resumeAudioContext(player) {
 }
 
 function setPlayerOutputVolume(player, volume) {
-  const safeVolume = Math.max(0, Math.min(1, volume));
+  const safeVolume = Math.max(0, Math.min(MAX_OUTPUT_GAIN, volume));
   if (player.gainNode) {
     player.gainNode.gain.value = safeVolume;
   } else {
-    player.audio.volume = safeVolume;
+    player.audio.volume = Math.min(1, safeVolume);
   }
 }
 
@@ -855,6 +857,7 @@ function bindGlobalControls() {
     savePrefs();
   });
 
+  els.masterVolume.max = "200";
   els.masterVolume.value = Math.round(state.masterVolume * 100);
   els.masterVolumeValue.textContent = els.masterVolume.value;
   els.masterVolume.addEventListener("input", () => {
