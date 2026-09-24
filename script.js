@@ -276,7 +276,7 @@ const CUES = [
     type: "FX",
     title: "Thần Nghệ Thuật xuất hiện",
     subtitle: "Hiệu ứng cảnh 3",
-    src: "audio/c3-than-Nghe-Thuat-xuat-hien.m4a",
+    src: "audio/kich/c3-than-Nghe-Thuat-xuat-hien.mp3",
     defaultVolume: 0.9,
   },
   {
